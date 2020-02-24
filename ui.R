@@ -25,8 +25,8 @@ shinyUI(fluidPage(
                 "node-type", "Node type",
                 choices = list("equation", "input")
                 ),
-            selectInput("parents", "Parents", choices = get_node_list(), multiple = TRUE),
-            selectInput("children", "Children", choices = get_node_list(), multiple = TRUE),
+            selectInput("parents", "Parents", choices = g$get_node_names(), multiple = TRUE),
+            selectInput("children", "Children", choices = g$get_node_names(), multiple = TRUE),
             actionButton("go-button", "Go")
         ),
 

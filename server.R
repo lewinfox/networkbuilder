@@ -9,7 +9,7 @@
 
 library(shiny)
 library(networkD3)
-source("utils.R")
+source("utils.R")  # Sets up a graph g
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
@@ -20,20 +20,21 @@ shinyServer(function(input, output, session) {
         type <- input$`node-type`
         parents <- input$parents
         children <- input$children
-        add_node(title, type, parents, children)
-        # Render graph
-        output$graph <- networkD3::renderForceNetwork({
-            render_graph()
-        })
-        # Update input lists with new node
-        updateSelectInput(session, "parents", choices = get_node_list())
-        updateSelectInput(session, "children", choices = get_node_list())
+        if (title %in% g$get_node_names()) {
+            warning("No duplicate names allowed")
+        } else {
+            g$add_node(title, type, parents, children)
+            # Render graph
+            output$graph <- networkD3::renderForceNetwork(render_graph(g))
+            # Update input lists with new node
+            node_list <- g$get_node_names()
+            updateSelectInput(session, "parents", choices = node_list)
+            updateSelectInput(session, "children", choices = node_list)
+        }
+        updateTextInput(session, "node-name", value = "")
+        updateSelectInput(session, "parents", choices = g$get_node_names())
+        updateSelectInput(session, "children", choices = g$get_node_names())
       }
     )
-
-    # Render graph
-    output$graph <- networkD3::renderForceNetwork({
-        render_graph()
-    })
-
+    
 })
